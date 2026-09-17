@@ -232,46 +232,65 @@
       track.appendChild(card);
     });
 
-    var prev = document.querySelector('[data-rev-prev]');
-    var next = document.querySelector('[data-rev-next]');
-    var dotsBox = document.querySelector('[data-rev-dots]');
-    bindScrollArrows(track, prev, next);
+    bindScrollArrows(track,
+      document.querySelector('[data-rev-prev]'),
+      document.querySelector('[data-rev-next]'));
+    bindDots(track, document.querySelector('[data-rev-dots]'));
+  }
 
-    /* Un punto por página visible */
-    function perPage() {
-      var card = track.firstElementChild;
-      if (!card) return 1;
-      return Math.max(1, Math.round(track.clientWidth / card.getBoundingClientRect().width));
+  /* Un punto por página visible. Si todo cabe de una, no se muestran. */
+  function bindDots(track, dotsBox) {
+    if (!track || !dotsBox) return;
+
+    function pageWidth() {
+      return Math.max(1, track.clientWidth);
     }
 
-    function renderDots() {
-      var pages = Math.max(1, Math.ceil(REVIEWS.length / perPage()));
-      dotsBox.innerHTML = '';
-      for (var i = 0; i < pages; i++) {
-        (function (page) {
-          var dot = document.createElement('button');
-          dot.type = 'button';
-          dot.setAttribute('aria-label', 'Ir a la página ' + (page + 1));
-          dot.addEventListener('click', function () {
-            track.scrollTo({ left: page * track.clientWidth, behavior: 'smooth' });
-          });
-          dotsBox.appendChild(dot);
-        })(i);
+    /* La última página casi nunca cabe entera, así que su posición real es el
+       tope del scroll. Sin esto el último punto nunca llegaba a marcarse. */
+    function positionOf(page) {
+      var max = Math.max(0, track.scrollWidth - track.clientWidth);
+      return Math.min(page * pageWidth(), max);
+    }
+
+    function render() {
+      var pages = Math.ceil((track.scrollWidth - 1) / pageWidth());
+      dotsBox.hidden = pages <= 1;
+      if (dotsBox.hidden) { dotsBox.innerHTML = ''; return; }
+      if (dotsBox.children.length !== pages) {
+        dotsBox.innerHTML = '';
+        for (var i = 0; i < pages; i++) {
+          (function (page) {
+            var dot = document.createElement('button');
+            dot.type = 'button';
+            dot.setAttribute('aria-label', 'Ir a la página ' + (page + 1));
+            dot.addEventListener('click', function () {
+              track.scrollTo({ left: positionOf(page), behavior: 'smooth' });
+            });
+            dotsBox.appendChild(dot);
+          })(i);
+        }
       }
-      markActiveDot();
+      markActive();
     }
 
-    function markActiveDot() {
-      if (!dotsBox.children.length) return;
-      var page = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+    function markActive() {
+      var total = dotsBox.children.length;
+      if (!total) return;
+      var active = 0;
+      var closest = Infinity;
+      for (var i = 0; i < total; i++) {
+        var distance = Math.abs(track.scrollLeft - positionOf(i));
+        if (distance < closest) { closest = distance; active = i; }
+      }
       Array.prototype.forEach.call(dotsBox.children, function (dot, i) {
-        dot.setAttribute('aria-current', i === page ? 'true' : 'false');
+        dot.setAttribute('aria-current', i === active ? 'true' : 'false');
       });
     }
 
-    track.addEventListener('scroll', markActiveDot, { passive: true });
-    window.addEventListener('resize', renderDots);
-    renderDots();
+    track.addEventListener('scroll', markActive, { passive: true });
+    window.addEventListener('resize', render);
+    render();
   }
 
   /* Flechas para cualquier carrusel con scroll horizontal */
@@ -320,6 +339,8 @@
       videos.forEach(start);
       return;
     }
+    /* El observer también cubre el recorte horizontal del carrusel:
+       solo se reproduce el video que está realmente a la vista. */
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) start(entry.target);
@@ -327,6 +348,9 @@
       });
     }, { threshold: 0.25 });
     videos.forEach(function (v) { observer.observe(v); });
+
+    bindDots(document.querySelector('[data-videos]'),
+             document.querySelector('[data-video-dots]'));
   }
 
   /* ── Fecha de hoy en el bloque de urgencia ───────────── */

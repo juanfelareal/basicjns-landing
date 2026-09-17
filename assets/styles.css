@@ -227,6 +227,15 @@ button{font:inherit;color:inherit;cursor:pointer}
 .video-card{border-radius:var(--radius);overflow:hidden;background:#000}
 .video-card video{width:100%;aspect-ratio:9/16;object-fit:cover;display:block}
 
+/* Puntos indicadores, compartidos por los carruseles */
+.carousel-dots{display:flex;justify-content:center;gap:6px;margin-top:16px}
+.carousel-dots button{
+  width:8px;height:8px;padding:0;border:0;border-radius:99px;
+  background:var(--line-strong);transition:width .2s,background-color .2s;
+}
+.carousel-dots button[aria-current="true"]{width:22px;background:var(--green-dark)}
+.carousel-dots[hidden]{display:none}
+
 /* ── Detalle producto ─────────────────────────────────── */
 .section--detail{background:var(--bg-alt)}
 .detail-figure{margin:28px auto 22px;max-width:640px}
@@ -300,12 +309,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .review-author strong{color:var(--ink)}
 
 .reviews-nav{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:18px}
-.reviews-dots{display:flex;gap:6px}
-.reviews-dots button{
-  width:8px;height:8px;padding:0;border:0;border-radius:99px;
-  background:var(--line-strong);transition:width .2s,background-color .2s;
-}
-.reviews-dots button[aria-current="true"]{width:22px;background:var(--green-dark)}
+.reviews-dots{display:flex;gap:6px;margin:0}
 
 .trust-box{
   display:flex;align-items:flex-start;gap:12px;
@@ -410,7 +414,15 @@ button{font:inherit;color:inherit;cursor:pointer}
 }
 
 @media (max-width:620px){
-  .video-row{grid-template-columns:1fr;gap:14px}
+  /* Videos en carrusel horizontal: se deslizan, no se apilan */
+  .video-row{
+    grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:82%;
+    gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
+    scroll-behavior:smooth;scrollbar-width:none;
+    padding-inline:20px;margin-inline:-20px;
+  }
+  .video-row::-webkit-scrollbar{display:none}
+  .video-card{scroll-snap-align:center}
   .reco-track{grid-auto-columns:78%}
   .reviews-track{grid-auto-columns:88%}
   .trust-row{grid-template-columns:repeat(2,1fr);gap:18px}

@@ -77,6 +77,11 @@ Resultado: **61 MB → 2.3 MB**, mismo encuadre. Cada uno lleva `poster` (primer
 fotograma) y `preload="none"`; se piden solo al entrar en pantalla. Si el navegador
 bloquea el autoplay, queda el poster visible en vez de una caja negra.
 
+En escritorio van los tres en fila. En móvil son un **carrusel horizontal** que se
+desliza (82 % de ancho, el siguiente asoma) con puntos indicadores. Solo se reproduce
+el video visible: el IntersectionObserver también cuenta el recorte horizontal del
+carrusel, así que los otros dos no gastan datos.
+
 ## Guía de tallas
 
 La tienda la publica como **una sola imagen** (tabla + ilustración de cómo medir), no

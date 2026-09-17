@@ -77,6 +77,26 @@ Resultado: **61 MB → 2.3 MB**, mismo encuadre. Cada uno lleva `poster` (primer
 fotograma) y `preload="none"`; se piden solo al entrar en pantalla. Si el navegador
 bloquea el autoplay, queda el poster visible en vez de una caja negra.
 
+## Guía de tallas
+
+La tienda la publica como **una sola imagen** (tabla + ilustración de cómo medir), no
+como texto — por eso al inspeccionar el acordeón parece vacío. Es el archivo real del
+CDN de Shopify, `assets/guia-de-tallas.jpg` (952×761), copiado tal cual:
+
+| Talla | Cintura (cm) | Cadera (cm) |
+|---|---|---|
+| 6 | 65 – 70 | 95 – 100 |
+| 8 | 71 – 76 | 101 – 106 |
+| 10 | 77 – 82 | 107 – 112 |
+| 12 | 83 – 88 | 113 – 118 |
+| 14 | 89 – 94 | 119 – 124 |
+| 16 | 95 – 100 | 125 – 130 |
+
+Esos valores están **solo** transcritos aquí como referencia y en el `alt` de la imagen
+(para lectores de pantalla y buscadores). La página muestra la imagen original, sin
+reescribir ningún dato. La imagen enlaza a su versión completa porque en pantallas
+chicas la tabla incrustada queda pequeña.
+
 ## Verificado en móvil
 
 - Sin desbordes horizontales a 360 px ni a 390 px
@@ -86,8 +106,6 @@ bloquea el autoplay, queda el poster visible en vez de una caja negra.
 
 ## Diferencias deliberadas frente al original
 
-- **Guía de tallas:** en GemPages ese acordeón abre vacío. Aquí lleva una tabla de
-  medidas de referencia — hay que reemplazarla por las medidas reales de BASIC JNS.
 - **WhatsApp:** el botón flotante apunta a un número placeholder (`573000000000`).
 - **Header y footer:** reconstruidos a partir del tema para que la página se vea
   completa servida sola. Si se monta dentro del tema de Shopify, se borran y el

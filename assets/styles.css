@@ -205,9 +205,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 .accordion-body{padding:0 0 16px;font-size:14px;line-height:1.6;color:var(--ink-soft)}
 .accordion-body p{margin:0}
 
-.size-table{width:100%;border-collapse:collapse;font-size:14px}
-.size-table th,.size-table td{border:1px solid var(--line);padding:8px 10px;text-align:left}
-.size-table th{background:var(--bg-alt);font-weight:700}
+/* Guía de tallas: la tienda la tiene como una sola imagen (tabla + ilustración).
+   Se enlaza al archivo completo porque en pantallas chicas el texto queda pequeño. */
+.size-guide{display:block;border-radius:var(--radius);overflow:hidden}
+.size-guide img{width:100%;height:auto}
 
 /* ── Medios de pago (marquee) ─────────────────────────── */
 .section--payments{padding:0;background:var(--bg-alt)}

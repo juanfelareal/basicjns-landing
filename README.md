@@ -61,19 +61,28 @@ curl -s https://basicjns.co/products/pack-jeans-mujer-denim-descuento-increible.
 
 ## Videos
 
-Los originales eran 3 archivos `.mov` de 1920×1080 en el CDN de Shopify: **61 MB en
-total**, servidos como `video/quicktime` (poco fiable en Android). GemPages los
-mostraba recortados a 9:16 con `object-fit: cover`.
+Los originales son 3 archivos `.mov` en el CDN de Shopify: **61 MB en total**,
+servidos como `video/quicktime` (poco fiable en Android).
 
-Aquí se recortaron a 9:16 en origen y se recodificaron a MP4 540×960:
+⚠️ **Ojo con la rotación.** `ffprobe` reporta `1920x1080`, pero los archivos traen
+`rotation=-90` en la metadata: en pantalla se ven **1080×1920 verticales**, que es
+exactamente 9:16. **No hay que recortarlos.** Fiarse de las dimensiones crudas y
+aplicarles un `crop` deja el encuadre partido (cabeza cortada y los jeans fuera de
+cuadro). ffmpeg aplica la rotación solo al decodificar, así que basta escalar:
 
 ```bash
-ffmpeg -i src.mov -vf "crop=608:1080:(iw-608)/2:0,scale=540:960" \
+ffmpeg -i src.mov -vf "scale=540:960" \
   -c:v libx264 -crf 28 -preset slow -profile:v main -pix_fmt yuv420p \
   -movflags +faststart -an video.mp4
 ```
 
-Resultado: **61 MB → 2.3 MB**, mismo encuadre. Cada uno lleva `poster` (primer
+Para comprobar la rotación antes de tocar nada:
+
+```bash
+ffprobe -v error -select_streams v:0 -show_entries stream_side_data=rotation src.mov
+```
+
+Resultado: **61 MB → 2.2 MB**, encuadre completo. Cada uno lleva `poster` (primer
 fotograma) y `preload="none"`; se piden solo al entrar en pantalla. Si el navegador
 bloquea el autoplay, queda el poster visible en vez de una caja negra.
 
